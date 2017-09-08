@@ -1,0 +1,32 @@
+#######################################
+# Syntax Coloring Map For Motor
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MLEDScroll	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin KEYWORD2
+display KEYWORD2
+clear KEYWORD2
+setIntensity  KEYWORD2
+dot KEYWORD2
+scroll  KEYWORD2
+message KEYWORD2
+letter  KEYWORD2
+icon  KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+disBuffer	LITERAL1
+scrollSpeed LITERAL1
+msgPauseTime  LITERAL1
+flip  LITERAL1
