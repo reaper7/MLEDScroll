@@ -152,20 +152,20 @@ void MLEDScroll::message(String _msg, uint16_t _speed) {
   message(_msg);
 }
 
-void MLEDScroll::letter(const char* _letter) {
-  memcpy_P(disBuffer, matrix_fonts+(*_letter*8), 8);
+void MLEDScroll::character(const char* _character) {
+  memcpy_P(disBuffer, matrix_fonts+(*_character*8), 8);
   display();
 }
 
-void MLEDScroll::letter(char _letter) {
+void MLEDScroll::character(char _character) {
   char out[2];
-  out[0] = _letter;
+  out[0] = _character;
   out[1] = '\0';
-  letter(out);
+  character(out);
 }
 
-void MLEDScroll::letter(String _letter) {
-  letter(_letter.substring(0,1).c_str());
+void MLEDScroll::character(String _character) {
+  character(_character.substring(0,1).c_str());
 }
 
 void MLEDScroll::icon(uint8_t _icon) {

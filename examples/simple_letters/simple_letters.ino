@@ -26,20 +26,20 @@ void setup() {
 }
 
 void loop() {
-  matrix.letter("L");
+  matrix.character("L");
   intens();
-  matrix.letter("e");
+  matrix.character("e");
   intens();
-  matrix.letter("t");
+  matrix.character("t");
   intens();
-  matrix.letter("t");
+  matrix.character("t");
   intens();
-  matrix.letter("e");
+  matrix.character("e");
   intens();
-  matrix.letter("r");
+  matrix.character("r");
   intens();
-  matrix.letter("s");
+  matrix.character("s");
   intens();
-  matrix.letter(" ");
+  matrix.character(" ");
   intens();
 }

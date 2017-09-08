@@ -19,7 +19,7 @@ setIntensity  KEYWORD2
 dot KEYWORD2
 scroll  KEYWORD2
 message KEYWORD2
-letter  KEYWORD2
+character  KEYWORD2
 icon  KEYWORD2
 
 #######################################

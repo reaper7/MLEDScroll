@@ -21,9 +21,9 @@ class MLEDScroll
     bool scroll();
     void message(String _msg);
     void message(String _msg, uint16_t _speed);
-    void letter(const char* _letter);
-    void letter(char _letter);
-    void letter(String _letter);
+    void character(const char* _character);
+    void character(char _character);
+    void character(String _character);
     void icon(uint8_t _icon);
     void setIntensity(uint8_t _intens);
     uint16_t scrollSpeed;                                                       // Scroll speed in ms (lower = faster):
