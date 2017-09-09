@@ -6,4 +6,4 @@ Some parts of code is based on solutions from websites.
 
 2017 Reaper7
 
-paypal.me/reaper7md
+[paypal.me/reaper7md](https://www.paypal.me/reaper7md)
