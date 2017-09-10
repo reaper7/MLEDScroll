@@ -49,6 +49,10 @@ void MLEDScroll::setIntensity(uint8_t _intens) {
   sendCommand(0x88|(_intensity));
 }
 
+uint8_t MLEDScroll::getIntensity() {
+  return (_intensity);
+}
+
 void MLEDScroll::display() {
   sendDisBuffer();
 }

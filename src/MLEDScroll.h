@@ -26,6 +26,7 @@ class MLEDScroll
     void character(String _character);
     void icon(uint8_t _icon);
     void setIntensity(uint8_t _intens);
+    uint8_t getIntensity();
     uint16_t scrollSpeed;                                                       // Scroll speed in ms (lower = faster):
     unsigned long msgPauseTime;                                                 // Pause after message in ms (0 = no pause): 
     bool flip;
