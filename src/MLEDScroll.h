@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define DEFSCROLLSPEED  70
+#define DEFSCROLLSPEED  50
 #define DEFPAUSETIME    1500
 #define DEFINTENSITY    0
 
