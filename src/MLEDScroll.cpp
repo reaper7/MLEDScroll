@@ -4,6 +4,7 @@
 
 #define MAXTEXTLEN      250
 #define ICONPOSSTART    256
+#define ICONMAX         4
 
 unsigned long thisMs = 0;
 unsigned long lastMs = 0;
@@ -169,6 +170,8 @@ void MLEDScroll::character(String _character) {
 }
 
 void MLEDScroll::icon(uint8_t _icon) {
+  if (_icon>=ICONMAX)
+    _icon = 0; 
   memcpy_P(disBuffer, matrix_fonts+((ICONPOSSTART + _icon) * 8), 8);
   display();
 }
