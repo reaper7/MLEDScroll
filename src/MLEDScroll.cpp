@@ -18,8 +18,8 @@ MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, boo
 	this->dataPin = _dataPin;
 	this->clockPin = _clockPin;
 
-	if(_intens>7)
-		_intensity=7;
+	if(_intens>8)
+		_intensity=8;
 	else
 		_intensity=_intens;
 
@@ -41,12 +41,17 @@ void MLEDScroll::begin() {
 }
 
 void MLEDScroll::setIntensity(uint8_t _intens) {
-	if(_intens>7)
-		_intensity=7;
+	if(_intens>8)
+		_intensity=8;
 	else
 		_intensity=_intens;
 
-  sendCommand(0x88|(_intensity));
+  display();
+
+  if (_intensity==0)
+    sendCommand(0x80);                                                          // display off
+  else
+    sendCommand(0x88|(_intensity-1));
 }
 
 uint8_t MLEDScroll::getIntensity() {
@@ -58,7 +63,7 @@ void MLEDScroll::display() {
 }
 
 void MLEDScroll::display(uint8_t _intens) {
-  display();
+  //display();
   setIntensity(_intens);
 }
 

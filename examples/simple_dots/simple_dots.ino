@@ -1,14 +1,10 @@
 #include <MLEDScroll.h>
 
-#if defined ( ESP8266 )
-MLEDScroll matrix(0, 13, 14);
-#elif defined ( ESP32 )
-MLEDScroll matrix(0, 23, 18);
-#endif
+MLEDScroll matrix;
 
 void setup() {
   matrix.begin();
-  //matrix.flip=true;
+  //matrix.flip=false;
 }
 
 void loop() {

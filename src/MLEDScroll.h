@@ -5,13 +5,24 @@
 
 #define DEFSCROLLSPEED  50
 #define DEFPAUSETIME    1500
-#define DEFINTENSITY    0
+#define DEFINTENSITY    1
+
+#if defined ( ESP8266 )
+#define MLEDPINDATA   13
+#define MLEDPINCLOCK  14
+#elif defined ( ESP32 )
+#define MLEDPINDATA   23
+#define MLEDPINCLOCK  18
+#else
+#define MLEDPINDATA   13
+#define MLEDPINCLOCK  14
+#endif
 
 class MLEDScroll
 {
 
   public:
-    MLEDScroll(uint8_t _intens=DEFINTENSITY, uint8_t _dataPin=13, uint8_t _clockPin=14, bool _flip=true);
+    MLEDScroll(uint8_t _intens=DEFINTENSITY, uint8_t _dataPin=MLEDPINDATA, uint8_t _clockPin=MLEDPINCLOCK, bool _flip=true);
 		void begin();
 		void display();
 		void display(uint8_t _intens);
