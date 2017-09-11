@@ -15,13 +15,13 @@ uint8_t buffPos = 0;
 char charMsg[MAXTEXTLEN];
 
 MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, bool _flip) {
-	this->dataPin = _dataPin;
-	this->clockPin = _clockPin;
+  this->dataPin = _dataPin;
+  this->clockPin = _clockPin;
 
-	if(_intens>8)
-		_intensity=8;
-	else
-		_intensity=_intens;
+  if(_intens>8)
+    _intensity=8;
+  else
+    _intensity=_intens;
 
   scrollSpeed = DEFSCROLLSPEED;
   msgPauseTime = DEFPAUSETIME;
@@ -29,11 +29,11 @@ MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, boo
 }
 
 void MLEDScroll::begin() {
-	pinMode(dataPin, OUTPUT);
-	pinMode(clockPin, OUTPUT);
-	
-	digitalWrite(dataPin, HIGH);
-	digitalWrite(clockPin, HIGH);
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+
+  digitalWrite(dataPin, HIGH);
+  digitalWrite(clockPin, HIGH);
 
   clear();
   display();
@@ -41,10 +41,10 @@ void MLEDScroll::begin() {
 }
 
 void MLEDScroll::setIntensity(uint8_t _intens) {
-	if(_intens>8)
-		_intensity=8;
-	else
-		_intensity=_intens;
+  if(_intens>8)
+    _intensity=8;
+  else
+    _intensity=_intens;
 
   display();
 
@@ -68,21 +68,21 @@ void MLEDScroll::display(uint8_t _intens) {
 }
 
 void MLEDScroll::clear() {
-	memset(disBuffer, 0x00, 16);
-	display();
+  memset(disBuffer, 0x00, 16);
+  display();
 }
 
 void MLEDScroll::dot(uint8_t _x, uint8_t _y, bool _draw, bool _updCurrRow) {
-	_x&=0x07;
-	_y&=0x07;
+  _x&=0x07;
+  _y&=0x07;
 
-	if(_draw) {
+  if(_draw) {
     disBuffer[_y]|=(1<<(7-_x));
-	} else {
+  } else {
     disBuffer[_y]&=~(1<<(7-_x));
-	}
+  }
 
-	if (_updCurrRow) {
+  if (_updCurrRow) {
     if (flip)
       sendData(_y, disBuffer[_y]);
     else

@@ -23,11 +23,11 @@ class MLEDScroll
 
   public:
     MLEDScroll(uint8_t _intens=DEFINTENSITY, uint8_t _dataPin=MLEDPINDATA, uint8_t _clockPin=MLEDPINCLOCK, bool _flip=true);
-		void begin();
-		void display();
-		void display(uint8_t _intens);
-		void clear();
-		void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
+    void begin();
+    void display();
+    void display(uint8_t _intens);
+    void clear();
+    void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     bool scroll();
     void message(String _msg);
@@ -43,13 +43,13 @@ class MLEDScroll
     bool flip;
 
   private:
-		void sendCommand(uint8_t _cmd);
+    void sendCommand(uint8_t _cmd);
     void sendData(uint8_t _address, uint8_t _data);
     void send(uint8_t _data);
     uint8_t dataPin;
     uint8_t clockPin;
-		void sendDisBuffer();                                                       // Send 8 bytes at one with autoincrement (much faster)
-		uint8_t _intensity;
+    void sendDisBuffer();                                                       // Send 8 bytes at one with autoincrement (much faster)
+    uint8_t _intensity;
     void initScroll();
     void fetchChr();
     void moveScrollBuffer();
