@@ -7,6 +7,11 @@
 #define DEFPAUSETIME    1500
 #define DEFINTENSITY    1
 
+// scroll direction
+#define DIRTOLEFT 0
+#define DIRTODOWN 1
+#define DIRTOUP   2
+
 #if defined ( ESP8266 )
 #define MLEDPINDATA   13
 #define MLEDPINCLOCK  14
@@ -29,7 +34,7 @@ class MLEDScroll
     void clear();
     void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    bool scroll();
+    int scroll(uint8_t _direction=DIRTOLEFT);
     void message(String _msg);
     void message(String _msg, uint16_t _speed);
     void character(const char* _character);
@@ -48,11 +53,11 @@ class MLEDScroll
     void send(uint8_t _data);
     uint8_t dataPin;
     uint8_t clockPin;
-    void sendDisBuffer();                                                       // Send 8 bytes at one with autoincrement (much faster)
+    void sendDisBuffer();                                                       // Send 8 bytes at once with autoincrement (much faster)
     uint8_t _intensity;
     void initScroll();
     void fetchChr();
-    void moveScrollBuffer();
+    void moveScrollBuffer(uint8_t _direction);
     uint8_t swap(uint8_t _x);
 };
 
