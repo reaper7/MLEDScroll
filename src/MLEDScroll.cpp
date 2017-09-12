@@ -2,13 +2,26 @@
 #include "MLEDScroll.h"
 #include "MLEDScrollFonts.h"
 
-#define MAXTEXTLEN      250
-#define ICONPOSSTART    256
-#define ICONMAX         4
+#define MAXTEXTLEN        250
+#define ICONPOSSTART      256
+#define ICONMAX           4
+#define DEFPINDELAY       1
+
+#define DISP_CTRL_CMD     0x80
+#define DISP_OFF          0x00
+#define DISP_ON           0x08
+#define DISP_INTENS_MASK  0x07
+
+#define DISP_DATA_CMD     0x40
+#define DISP_DATA_INC     0x00
+#define DISP_DATA_FIX     0x04
+
+#define DISP_ADDR_CMD     0xC0
+#define DISP_ADDR_MASK    0x0F
 
 unsigned long thisMs = 0;
-unsigned long lastMs = 0;
-unsigned long pauseStart;
+volatile unsigned long lastMs = 0;
+volatile unsigned long pauseStart;
 bool pauseDisplay = false;
 uint16_t msgPos = 0;
 uint8_t buffPos = 0;
@@ -36,7 +49,6 @@ void MLEDScroll::begin() {
   digitalWrite(clockPin, HIGH);
 
   clear();
-  display();
   setIntensity(_intensity);
 }
 
@@ -46,12 +58,10 @@ void MLEDScroll::setIntensity(uint8_t _intens) {
   else
     _intensity=_intens;
 
-  display();
-
   if (_intensity==0)
-    sendCommand(0x80);                                                          // display off
+    sendCommand(DISP_CTRL_CMD | DISP_OFF);                                      // display off
   else
-    sendCommand(0x88|(_intensity-1));
+    sendCommand(DISP_CTRL_CMD | DISP_ON | ((_intensity-1) & DISP_INTENS_MASK));
 }
 
 uint8_t MLEDScroll::getIntensity() {
@@ -59,11 +69,11 @@ uint8_t MLEDScroll::getIntensity() {
 }
 
 void MLEDScroll::display() {
-  sendDisBuffer();
+  sendDataBlock();
 }
 
 void MLEDScroll::display(uint8_t _intens) {
-  //display();
+  display();
   setIntensity(_intens);
 }
 
@@ -210,54 +220,58 @@ void MLEDScroll::icon(uint8_t _icon) {
   display();
 }
 
-void MLEDScroll::sendCommand(uint8_t _cmd) {
+void MLEDScroll::sendStart() {
   digitalWrite(dataPin, LOW);
-  delayMicroseconds(1);
-  send(_cmd);
-  digitalWrite(dataPin, HIGH);
-  delayMicroseconds(1);
+  delayMicroseconds(DEFPINDELAY);
+  digitalWrite(clockPin, LOW);
+  delayMicroseconds(DEFPINDELAY);
 }
 
-void MLEDScroll::sendData(uint8_t _address, uint8_t _data) {
-  sendCommand(0x44);
+void MLEDScroll::sendEnd() {
   digitalWrite(dataPin, LOW);
-  delayMicroseconds(1);
-  send(0xC0|_address);
-  send(_data);
+  delayMicroseconds(DEFPINDELAY);
+  digitalWrite(clockPin, HIGH);
+  delayMicroseconds(DEFPINDELAY);
   digitalWrite(dataPin, HIGH);
-  delayMicroseconds(1);
+  delayMicroseconds(DEFPINDELAY); 
 }
 
 void MLEDScroll::send(uint8_t _data) {
-  for(uint8_t i=0;i<8;i++) {
-    digitalWrite(clockPin, LOW);
-    delayMicroseconds(1);
+  for(uint8_t i=0;i<8;i++) { 
     digitalWrite(dataPin, !!(_data & (1<<i)));
-    delayMicroseconds(1);
+    delayMicroseconds(DEFPINDELAY);
     digitalWrite(clockPin, HIGH);
-    delayMicroseconds(1);
+    delayMicroseconds(DEFPINDELAY);
+    digitalWrite(clockPin, LOW);
+    delayMicroseconds(DEFPINDELAY);
   }
 }
 
-void MLEDScroll::sendDisBuffer() {
-  sendCommand(0x40);                                                            //set data autoincrement
-  digitalWrite(dataPin, LOW);
-  delayMicroseconds(1);
-  send(0xC0);                                                                   //set address to 0x00
+void MLEDScroll::sendCommand(uint8_t _cmd) {
+  sendStart();
+  send(_cmd);
+  sendEnd();
+}
+
+void MLEDScroll::sendData(uint8_t _address, uint8_t _data) {
+  sendCommand(DISP_DATA_CMD | DISP_DATA_FIX);                                   // set data fixed address
+  sendStart();
+  send(DISP_ADDR_CMD | (_address & DISP_ADDR_MASK));
+  send(_data);
+  sendEnd();
+}
+
+void MLEDScroll::sendDataBlock() {
+  sendCommand(DISP_DATA_CMD | DISP_DATA_INC);                                   // set data address autoincrement
+  sendStart();
+  send(DISP_ADDR_CMD);                                                          // send 8 data bytes at addr 0x00
   for(uint8_t i=0;i<8;i++) {
     if (flip)
       send(disBuffer[i]);
     else
       send(swap(disBuffer[7-i]));
   }
-  digitalWrite(dataPin, LOW);
-  delayMicroseconds(1);
-  digitalWrite(clockPin, LOW);
-  delayMicroseconds(1);
-  digitalWrite(clockPin, HIGH);
-  delayMicroseconds(1);
-  digitalWrite(dataPin, HIGH);
-  delayMicroseconds(1); 
+  sendEnd();
 }
 
 uint8_t MLEDScroll::swap(uint8_t _x) {

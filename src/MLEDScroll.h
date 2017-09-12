@@ -43,17 +43,19 @@ class MLEDScroll
     void icon(uint8_t _icon);
     void setIntensity(uint8_t _intens);
     uint8_t getIntensity();
-    uint16_t scrollSpeed;                                                       // Scroll speed in ms (lower = faster):
-    unsigned long msgPauseTime;                                                 // Pause after message in ms (0 = no pause): 
+    uint16_t scrollSpeed;                                                       // scroll speed in ms (lower = faster):
+    unsigned long msgPauseTime;                                                 // pause after message in ms (0 = no pause): 
     bool flip;
 
   private:
-    void sendCommand(uint8_t _cmd);
-    void sendData(uint8_t _address, uint8_t _data);
+    void sendStart();
+    void sendEnd();
     void send(uint8_t _data);
+    void sendCommand(uint8_t _cmd);
+    void sendData(uint8_t _address, uint8_t _data);                             // send 1 data byte at fixed address 
+    void sendDataBlock();                                                       // send 8 data bytes at once with autoincrement (much faster)
     uint8_t dataPin;
     uint8_t clockPin;
-    void sendDisBuffer();                                                       // Send 8 bytes at once with autoincrement (much faster)
     uint8_t _intensity;
     void initScroll();
     void fetchChr();
