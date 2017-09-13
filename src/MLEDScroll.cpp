@@ -2,7 +2,7 @@
 #include "MLEDScroll.h"
 #include "MLEDScrollFonts.h"
 
-#define MAXTEXTLEN        250
+#define MAXTEXTLEN        254
 #define ICONPOSSTART      256
 #define ICONMAX           4
 #define DEFPINDELAY       1
@@ -105,7 +105,6 @@ void MLEDScroll::dot(uint8_t _x, uint8_t _y, bool _draw, bool _updCurrRow) {
 }
 
 void MLEDScroll::initScroll() {
-  clear();
   msgPos = 0;
   buffPos = 0;
   fetchChr();
@@ -125,7 +124,7 @@ void MLEDScroll::fetchChr() {
 
 void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
   switch(_direction) {
-    case DIRTOLEFT:                                                             // from right to left
+    case SCROLLLEFT:                                                            // from right to left
       {
         for(uint8_t i=0;i<8;i++) {
           disBuffer[i] = disBuffer[i] << 1;
@@ -136,7 +135,18 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
         }
       }  
       break;
-    case DIRTODOWN:                                                             // from top to bottom
+    case SCROLLRIGHT:                                                           // from left to right
+      {
+        for(uint8_t i=0;i<8;i++) {
+          disBuffer[i] = disBuffer[i] >> 1;
+          if (disBuffer[i + 8] & 1) {
+            disBuffer[i] = disBuffer[i] | 128;
+          }
+          disBuffer[i+8] = disBuffer[i+8] >> 1;
+        }
+      }  
+      break;
+    case SCROLLDOWN:                                                            // from top to bottom
       {
         char _tmp = disBuffer[15];
         for(uint8_t i=7;i>0;i--) {
@@ -147,7 +157,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
         disBuffer[8] = 0x00;
       }
       break;
-    case DIRTOUP:                                                               // from bottom to top
+    case SCROLLUP:                                                              // from bottom to top
       memmove(disBuffer, disBuffer+1, 15);
       disBuffer[15] = 0x00;
       break;
@@ -162,29 +172,28 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
   }
 }
 
-int MLEDScroll::scroll(uint8_t _direction) {
-  int res = 0;
+uint8_t MLEDScroll::scroll(uint8_t _direction) {
   thisMs = millis();
   if (thisMs - lastMs > scrollSpeed) {
     lastMs = thisMs;
     if (pauseDisplay == true) {
       if (thisMs - pauseStart > msgPauseTime) {
         initScroll();
-        res = -2;
+        return SCROLL_ENDED;
       } else {
-        res = -1;      
+        return SCROLL_PAUSED;      
       }
     } else {
       moveScrollBuffer(_direction);
       display();
-      res = 1;
+      return SCROLL_MOVED;
     }  
   }
-  return res;
+  return SCROLL_WAITED;
 }
 
 void MLEDScroll::message(String _msg) {
-  if (_msg.length() < (MAXTEXTLEN-2)) {
+  if (_msg.length() < (MAXTEXTLEN-1)) {
     _msg.toCharArray(charMsg, _msg.length()+1);
     initScroll();
   }
@@ -195,15 +204,23 @@ void MLEDScroll::message(String _msg, uint16_t _speed) {
   message(_msg);
 }
 
+void MLEDScroll::message(String _msg, uint16_t _speed, unsigned long _pauseTime) {
+  scrollSpeed = _speed;
+  msgPauseTime = _pauseTime;
+  message(_msg);
+}
+
 void MLEDScroll::character(const char* _character) {
   memcpy_P(disBuffer, matrix_fonts+(*_character*8), 8);
+  charMsg[0] = char(0);
+  initScroll();
   display();
 }
 
 void MLEDScroll::character(char _character) {
   char out[2];
   out[0] = _character;
-  out[1] = '\0';
+  out[1] = char(0);
   character(out);
 }
 
@@ -215,6 +232,8 @@ void MLEDScroll::icon(uint8_t _icon) {
   if (_icon>=ICONMAX)
     _icon = 0; 
   memcpy_P(disBuffer, matrix_fonts+((ICONPOSSTART + _icon)*8), 8);
+  charMsg[0] = char(0);
+  initScroll();
   display();
 }
 

@@ -8,19 +8,26 @@
 #define DEFINTENSITY    1
 
 // scroll direction
-#define DIRTOLEFT 0
-#define DIRTODOWN 1
-#define DIRTOUP   2
+#define SCROLLLEFT      0
+#define SCROLLRIGHT     1                                                       // to right not fully working jet
+#define SCROLLDOWN      2
+#define SCROLLUP        3
+
+// scroll status
+#define SCROLL_WAITED   0
+#define SCROLL_MOVED    1
+#define SCROLL_PAUSED   2
+#define SCROLL_ENDED    3
 
 #if defined ( ESP8266 )
-#define MLEDPINDATA   13
-#define MLEDPINCLOCK  14
+#define MLEDPINDATA     13
+#define MLEDPINCLOCK    14
 #elif defined ( ESP32 )
-#define MLEDPINDATA   23
-#define MLEDPINCLOCK  18
+#define MLEDPINDATA     23
+#define MLEDPINCLOCK    18
 #else
-#define MLEDPINDATA   13
-#define MLEDPINCLOCK  14
+#define MLEDPINDATA     13
+#define MLEDPINCLOCK    14
 #endif
 
 class MLEDScroll
@@ -34,9 +41,10 @@ class MLEDScroll
     void clear();
     void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    int scroll(uint8_t _direction=DIRTOLEFT);
+    uint8_t scroll(uint8_t _direction=SCROLLLEFT);
     void message(String _msg);
     void message(String _msg, uint16_t _speed);
+    void message(String _msg, uint16_t _speed, unsigned long _pauseTime);
     void character(const char* _character);
     void character(char _character);
     void character(String _character);
