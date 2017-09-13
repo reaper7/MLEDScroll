@@ -42,6 +42,7 @@ class MLEDScroll
     void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t scroll(uint8_t _direction=SCROLLLEFT);
+    uint8_t scroll(uint8_t _direction, uint16_t _speed);
     void message(String _msg);
     void message(String _msg, uint16_t _speed);
     void message(String _msg, uint16_t _speed, unsigned long _pauseTime);

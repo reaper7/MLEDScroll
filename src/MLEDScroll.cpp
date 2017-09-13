@@ -192,8 +192,14 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
   return SCROLL_WAITED;
 }
 
+uint8_t MLEDScroll::scroll(uint8_t _direction, uint16_t _speed) {
+  scrollSpeed = _speed;
+  return scroll(_direction);
+}
+
 void MLEDScroll::message(String _msg) {
   if (_msg.length() < (MAXTEXTLEN-1)) {
+    memset(charMsg, 0, sizeof(charMsg));
     _msg.toCharArray(charMsg, _msg.length()+1);
     initScroll();
   }
@@ -212,7 +218,7 @@ void MLEDScroll::message(String _msg, uint16_t _speed, unsigned long _pauseTime)
 
 void MLEDScroll::character(const char* _character) {
   memcpy_P(disBuffer, matrix_fonts+(*_character*8), 8);
-  charMsg[0] = char(0);
+  memset(charMsg, 0, sizeof(charMsg));
   initScroll();
   display();
 }
@@ -232,7 +238,7 @@ void MLEDScroll::icon(uint8_t _icon) {
   if (_icon>=ICONMAX)
     _icon = 0; 
   memcpy_P(disBuffer, matrix_fonts+((ICONPOSSTART + _icon)*8), 8);
-  charMsg[0] = char(0);
+  memset(charMsg, 0, sizeof(charMsg));
   initScroll();
   display();
 }
