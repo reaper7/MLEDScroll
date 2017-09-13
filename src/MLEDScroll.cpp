@@ -115,8 +115,6 @@ void MLEDScroll::initScroll() {
 }
 
 void MLEDScroll::fetchChr() {
-  int foundVal = 0;
-
   if (charMsg[msgPos] == 0) {
     msgPos = 0;
     pauseDisplay = true;
