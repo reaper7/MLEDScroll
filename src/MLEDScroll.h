@@ -78,7 +78,7 @@ class MLEDScroll
 #if defined (MATRIXDEBUG)
     void _serialInit();
     void _printFrame();
-    void _printValue();
+    void _printValue(int8_t _pos=-1);
 #endif
 };
 

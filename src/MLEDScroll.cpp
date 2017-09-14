@@ -74,9 +74,6 @@ uint8_t MLEDScroll::getIntensity() {
 
 void MLEDScroll::display() {
   sendDataBlock();
-#if defined (MATRIXDEBUG)
-  _printValue();
-#endif
 }
 
 void MLEDScroll::display(uint8_t _intens) {
@@ -103,11 +100,7 @@ void MLEDScroll::dot(uint8_t _x, uint8_t _y, bool _draw, bool _updCurrRow) {
     if (flip)
       sendData(_y, disBuffer[_y]);
     else
-      sendData(7-_y, swap(disBuffer[_y]));
-    digitalWrite(dataPin, LOW);
-    digitalWrite(clockPin, LOW);
-    digitalWrite(clockPin, HIGH);
-    digitalWrite(dataPin, HIGH);    
+      sendData(7-_y, swap(disBuffer[_y]));   
   }
 }
 
@@ -201,7 +194,6 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
   } else {
     _scrollStatus = SCROLL_WAITED;
   }
-
   return _scrollStatus;
 }
 
@@ -295,6 +287,9 @@ void MLEDScroll::sendData(uint8_t _address, uint8_t _data) {
   send(DISP_ADDR_CMD | (_address & DISP_ADDR_MASK));
   send(_data);
   sendEnd();
+#if defined (MATRIXDEBUG)
+  _printValue(_address);
+#endif
 }
 
 void MLEDScroll::sendDataBlock() {
@@ -308,6 +303,9 @@ void MLEDScroll::sendDataBlock() {
       send(swap(disBuffer[7-i]));
   }
   sendEnd();
+#if defined (MATRIXDEBUG)
+  _printValue();
+#endif
 }
 
 uint8_t MLEDScroll::swap(uint8_t _x) {
@@ -332,10 +330,22 @@ void MLEDScroll::_printFrame() {
     Serial.printf("\033[%d;1H%d|        |        |", i, i-3);
   }
   Serial.print("\033[11;1H-|--------|--------|");
+
+  Serial.printf("\033[%d;%dH%s", 12, 1, "SCROLL STAT:");
+  Serial.printf("\033[%d;%dH%s", 13, 1, "MESSAGE POS:");
+  Serial.printf("\033[%d;%dH%s", 14, 1, "BUFFER  POS:");
 }
 
-void MLEDScroll::_printValue() {
-  for(uint8_t i=0;i<8;i++) {
+void MLEDScroll::_printValue(int8_t _pos) {
+  uint8_t _min, _max;
+  if (_pos < 0) {
+    _min=0;
+    _max=8;
+  } else {
+    _min=_pos;
+    _max=_pos;
+  }
+  for(uint8_t i=_min;i<_max;i++) {
     for(uint8_t x=0;x<2;x++) {
       uint8_t a = disBuffer[(8*x)+i];
       char b[sizeof(a)*8+1] = {0};
@@ -346,5 +356,9 @@ void MLEDScroll::_printValue() {
     }
   }
   Serial.print("\033[39;49m");                                                  // restore default colors
+  if (_scrollStatus>SCROLL_WAITED)
+    Serial.printf("\033[%d;%dH%d", 12, 14, _scrollStatus);
+  Serial.printf("\033[%d;%dH%d", 13, 14, msgPos);
+  Serial.printf("\033[%d;%dH%d", 14, 14, buffPos);
 }
 #endif
