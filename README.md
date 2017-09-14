@@ -1,6 +1,6 @@
-lib partly based on oryginal wemos code from:<br>
+idea for this library partly based on oryginal wemos code from:<br>
 https://github.com/wemos/WEMOS_Matrix_LED_Shield_Arduino_Library<br>
-with a few mods like scroll, letters, icons, flip and speed improvements.
+with a few mods and additions like scroll, letters, icons, display flip and improvements of speed.
 
 Some parts of code is based on solutions from websites.
 
