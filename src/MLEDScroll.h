@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define MATRIXDEBUG
+//#define MATRIXDEBUG
 
 #define DEFSCROLLSPEED  50
 #define DEFPAUSETIME    1500
