@@ -124,16 +124,14 @@ void MLEDScroll::initScroll() {
   msgPos = 0;
   buffPos = 0;
   firstChrSet = false;
-  //fetchChr();
   pauseDisplay = false;
   pauseStart = 0;
   lastMs = 0;
 }
 
 void MLEDScroll::fetchChr() {
-  //if (charMsg[msgPos] == 0) {
-  if (msgPos == msgLen) {
-    //msgPos = 0;
+  if (msgPos==msgLen) {
+    msgPos = 0;
     pauseDisplay = true;
     pauseStart = thisMs;
   }
@@ -254,7 +252,7 @@ void MLEDScroll::message(String _msg, uint16_t _speed, unsigned long _pauseTime)
 void MLEDScroll::character(const char* _character) {
   memcpy_P(disBuffer, matrix_fonts+(*_character*8), 8);
   memset(charMsg, 0, sizeof(charMsg));
-  msgLen = 0;
+  msgLen = 1;
   initScroll();
   display();
 }
@@ -275,7 +273,7 @@ void MLEDScroll::icon(uint8_t _icon) {
     _icon = 0; 
   memcpy_P(disBuffer, matrix_fonts+((ICONPOSSTART + _icon)*8), 8);
   memset(charMsg, 0, sizeof(charMsg));
-  msgLen = 0;
+  msgLen = 1;
   initScroll();
   display();
 }
