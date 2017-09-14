@@ -19,12 +19,15 @@
 #define DISP_ADDR_CMD     0xC0
 #define DISP_ADDR_MASK    0x0F
 
-unsigned long thisMs = 0;
-volatile unsigned long lastMs = 0;
+unsigned long thisMs;
+volatile unsigned long lastMs;
 volatile unsigned long pauseStart;
-bool pauseDisplay = false;
-uint16_t msgPos = 0;
-uint8_t buffPos = 0;
+bool pauseDisplay;
+uint16_t msgPos;
+uint16_t msgLen;
+uint8_t buffPos;
+uint8_t currDir;
+bool firstChrSet;
 char charMsg[MAXTEXTLEN];
 
 MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, bool _flip) {
@@ -39,7 +42,17 @@ MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, boo
   scrollSpeed = DEFSCROLLSPEED;
   msgPauseTime = DEFPAUSETIME;
   flip = _flip;
-  _scrollStatus = SCROLL_ENDED;
+
+  thisMs = 0;
+  lastMs = 0;
+  pauseStart = 0;
+  pauseDisplay = false;
+  msgPos = 0;
+  msgLen = 0;
+  buffPos = 0;
+  currDir = SCROLL_LEFT;
+  firstChrSet = false;
+  _scrollStatus = SCROLL_WAITED;
 }
 
 void MLEDScroll::begin() {
@@ -110,15 +123,17 @@ void MLEDScroll::initScroll() {
 #endif
   msgPos = 0;
   buffPos = 0;
-  fetchChr();
+  firstChrSet = false;
+  //fetchChr();
   pauseDisplay = false;
   pauseStart = 0;
   lastMs = 0;
 }
 
 void MLEDScroll::fetchChr() {
-  if (charMsg[msgPos] == 0) {
-    msgPos = 0;
+  //if (charMsg[msgPos] == 0) {
+  if (msgPos == msgLen) {
+    //msgPos = 0;
     pauseDisplay = true;
     pauseStart = thisMs;
   }
@@ -177,6 +192,9 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
 
 uint8_t MLEDScroll::scroll(uint8_t _direction) {
   thisMs = millis();
+  if (currDir != _direction) {
+    currDir = _direction;
+  }
   if (thisMs - lastMs > scrollSpeed) {
     lastMs = thisMs;
     if (pauseDisplay == true) {
@@ -187,6 +205,10 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
         _scrollStatus = SCROLL_PAUSED;      
       }
     } else {
+      if (!firstChrSet) {
+        fetchChr();
+        firstChrSet = true;
+      } 
       moveScrollBuffer(_direction);
       display();
       _scrollStatus = SCROLL_MOVED;
@@ -194,6 +216,12 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
   } else {
     _scrollStatus = SCROLL_WAITED;
   }
+#if defined (MATRIXDEBUG)
+  Serial.print("\033[?25l");                                                    // cursor off
+  if (_scrollStatus!=SCROLL_WAITED)
+    Serial.printf("\033[%d;%dH%d", 12, 14, _scrollStatus);
+  Serial.printf("\033[%d;%dH%d", 15, 14, currDir);
+#endif
   return _scrollStatus;
 }
 
@@ -203,9 +231,11 @@ uint8_t MLEDScroll::scroll(uint8_t _direction, uint16_t _speed) {
 }
 
 void MLEDScroll::message(String _msg) {
-  if (_msg.length() < (MAXTEXTLEN-1)) {
+  uint16_t _len = _msg.length();
+  if (_len < (MAXTEXTLEN-1)) {
     memset(charMsg, 0, sizeof(charMsg));
-    _msg.toCharArray(charMsg, _msg.length()+1);
+    _msg.toCharArray(charMsg, _len+1);
+    msgLen = _len;
     initScroll();
   }
 }
@@ -224,6 +254,7 @@ void MLEDScroll::message(String _msg, uint16_t _speed, unsigned long _pauseTime)
 void MLEDScroll::character(const char* _character) {
   memcpy_P(disBuffer, matrix_fonts+(*_character*8), 8);
   memset(charMsg, 0, sizeof(charMsg));
+  msgLen = 0;
   initScroll();
   display();
 }
@@ -244,6 +275,7 @@ void MLEDScroll::icon(uint8_t _icon) {
     _icon = 0; 
   memcpy_P(disBuffer, matrix_fonts+((ICONPOSSTART + _icon)*8), 8);
   memset(charMsg, 0, sizeof(charMsg));
+  msgLen = 0;
   initScroll();
   display();
 }
@@ -334,6 +366,7 @@ void MLEDScroll::_printFrame() {
   Serial.printf("\033[%d;%dH%s", 12, 1, "SCROLL STAT:");
   Serial.printf("\033[%d;%dH%s", 13, 1, "MESSAGE POS:");
   Serial.printf("\033[%d;%dH%s", 14, 1, "BUFFER  POS:");
+  Serial.printf("\033[%d;%dH%s", 15, 1, "CURRENT DIR:");
 }
 
 void MLEDScroll::_printValue(int8_t _pos) {
@@ -345,6 +378,7 @@ void MLEDScroll::_printValue(int8_t _pos) {
     _min=_pos;
     _max=_pos;
   }
+  Serial.print("\033[?25l");                                                    // cursor off
   for(uint8_t i=_min;i<_max;i++) {
     for(uint8_t x=0;x<2;x++) {
       uint8_t a = disBuffer[(8*x)+i];
@@ -356,9 +390,7 @@ void MLEDScroll::_printValue(int8_t _pos) {
     }
   }
   Serial.print("\033[39;49m");                                                  // restore default colors
-  if (_scrollStatus>SCROLL_WAITED)
-    Serial.printf("\033[%d;%dH%d", 12, 14, _scrollStatus);
-  Serial.printf("\033[%d;%dH%d", 13, 14, msgPos);
+  Serial.printf("\033[%d;%dH%d ", 13, 14, msgPos);
   Serial.printf("\033[%d;%dH%d", 14, 14, buffPos);
 }
 #endif
