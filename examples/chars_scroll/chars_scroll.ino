@@ -42,11 +42,9 @@ void loop() {
   letterBlink("2", 50);
   letterBlink("1", 50);
   letterBlink("0", 50);
-  letterBlink("S", 25);
-  letterBlink("t", 25);
-  letterBlink("a", 25);
-  letterBlink("r", 25);
-  letterBlink("t", 25);
+  letterBlink("G", 25);
+  letterBlink("o", 25);
+  letterBlink("!", 25);
 
   delay(500);
 
