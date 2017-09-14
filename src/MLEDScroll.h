@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define MATRIXDEBUG
+
 #define DEFSCROLLSPEED  50
 #define DEFPAUSETIME    1500
 #define DEFINTENSITY    1
@@ -66,10 +68,18 @@ class MLEDScroll
     uint8_t dataPin;
     uint8_t clockPin;
     uint8_t _intensity;
+    uint8_t _scrollStatus;
     void initScroll();
     void fetchChr();
     void moveScrollBuffer(uint8_t _direction);
     uint8_t swap(uint8_t _x);
+
+    // debug part
+#if defined (MATRIXDEBUG)
+    void _serialInit();
+    void _printFrame();
+    void _printValue();
+#endif
 };
 
 #endif

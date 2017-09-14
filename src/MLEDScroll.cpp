@@ -2,8 +2,6 @@
 #include "MLEDScroll.h"
 #include "MLEDScrollFonts.h"
 
-//#define MATRIXDEBUG
-
 #define MAXTEXTLEN        254
 #define ICONPOSSTART      256
 #define ICONMAX           4
@@ -41,12 +39,12 @@ MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, boo
   scrollSpeed = DEFSCROLLSPEED;
   msgPauseTime = DEFPAUSETIME;
   flip = _flip;
+  _scrollStatus = SCROLL_ENDED;
 }
 
 void MLEDScroll::begin() {
 #if defined (MATRIXDEBUG)
-  Serial.begin(115200);
-  Serial.printf("\033[2J\033[H");                                               // ESC command + clear screen + move cursor to home pos
+  _serialInit();
 #endif
   pinMode(dataPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
@@ -77,17 +75,7 @@ uint8_t MLEDScroll::getIntensity() {
 void MLEDScroll::display() {
   sendDataBlock();
 #if defined (MATRIXDEBUG)
-  for(uint8_t i=0;i<8;i++) {
-    for(uint8_t x=0;x<2;x++) {
-      uint8_t a = disBuffer[(8*x)+i];
-      char b[sizeof(a)*8+1] = {0};
-      for (size_t z=0;z<sizeof(a)*8;z++) {
-        b[sizeof(a)*8-1-z] = ((a>>z) & 0x1) ? '#' : ' ';
-      }
-      Serial.printf("\033[%dm\033[%d;%dH%s", x?37:31, i+3, x?12:3, b);
-    }
-  }
-  Serial.print("\033[39;49m");                                                  // restore default colors
+  _printValue();
 #endif
 }
 
@@ -125,14 +113,7 @@ void MLEDScroll::dot(uint8_t _x, uint8_t _y, bool _draw, bool _updCurrRow) {
 
 void MLEDScroll::initScroll() {
 #if defined (MATRIXDEBUG)
-  Serial.print("\033[?25l");                                                    // cursor off
-  Serial.print("\033[H");                                                       // draw terminal table
-  Serial.print("\033[1;1H |\033[31m76543210\033[39;49m|\033[37m76543210|");
-  Serial.print("\033[2;1H-|--------|--------|");
-  for(uint8_t i=3;i<11;i++) {
-    Serial.printf("\033[%d;1H%d|        |        |", i, i-3);
-  }
-  Serial.print("\033[11;1H-|--------|--------|");
+  _printFrame();
 #endif
   msgPos = 0;
   buffPos = 0;
@@ -208,17 +189,20 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
     if (pauseDisplay == true) {
       if (thisMs - pauseStart > msgPauseTime) {
         initScroll();
-        return SCROLL_ENDED;
+        _scrollStatus = SCROLL_ENDED;
       } else {
-        return SCROLL_PAUSED;      
+        _scrollStatus = SCROLL_PAUSED;      
       }
     } else {
       moveScrollBuffer(_direction);
       display();
-      return SCROLL_MOVED;
+      _scrollStatus = SCROLL_MOVED;
     }  
+  } else {
+    _scrollStatus = SCROLL_WAITED;
   }
-  return SCROLL_WAITED;
+
+  return _scrollStatus;
 }
 
 uint8_t MLEDScroll::scroll(uint8_t _direction, uint16_t _speed) {
@@ -331,3 +315,36 @@ uint8_t MLEDScroll::swap(uint8_t _x) {
   _x = (((_x&0xcc)>>2) + ((_x& 0x33)<<2));
   return((_x>>4) + (_x<<4));
 }
+
+// debug part
+#if defined (MATRIXDEBUG)
+void MLEDScroll::_serialInit() {
+  Serial.begin(115200);
+  Serial.printf("\033[2J\033[H");                                               // ESC command + clear screen + move cursor to home pos
+}
+
+void MLEDScroll::_printFrame() {
+  Serial.print("\033[?25l");                                                    // cursor off
+  Serial.print("\033[H");                                                       // draw terminal table
+  Serial.print("\033[1;1H |\033[31m76543210\033[39;49m|\033[37m76543210|");
+  Serial.print("\033[2;1H-|--------|--------|");
+  for(uint8_t i=3;i<11;i++) {
+    Serial.printf("\033[%d;1H%d|        |        |", i, i-3);
+  }
+  Serial.print("\033[11;1H-|--------|--------|");
+}
+
+void MLEDScroll::_printValue() {
+  for(uint8_t i=0;i<8;i++) {
+    for(uint8_t x=0;x<2;x++) {
+      uint8_t a = disBuffer[(8*x)+i];
+      char b[sizeof(a)*8+1] = {0};
+      for (size_t z=0;z<sizeof(a)*8;z++) {
+        b[sizeof(a)*8-1-z] = ((a>>z) & 0x1) ? '#' : ' ';
+      }
+      Serial.printf("\033[%dm\033[%d;%dH%s", x?37:31, i+3, x?12:3, b);
+    }
+  }
+  Serial.print("\033[39;49m");                                                  // restore default colors
+}
+#endif
