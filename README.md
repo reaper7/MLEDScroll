@@ -4,6 +4,8 @@ with a few mods and additions like scroll, letters, icons, display flip and impr
 
 Some parts of code is based on solutions from websites.
 
+Lib still under development (maybe forever), please comment out #define MATRIXDEBUG for normal usage
+
 2017 Reaper7
 
 [paypal.me/reaper7md](https://www.paypal.me/reaper7md)
