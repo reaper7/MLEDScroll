@@ -2,6 +2,8 @@
 #include "MLEDScroll.h"
 #include "MLEDScrollFonts.h"
 
+//#define MATRIXDEBUG
+
 #define MAXTEXTLEN        254
 #define ICONPOSSTART      256
 #define ICONMAX           4
@@ -42,6 +44,14 @@ MLEDScroll::MLEDScroll(uint8_t _intens, uint8_t _dataPin, uint8_t _clockPin, boo
 }
 
 void MLEDScroll::begin() {
+#if defined (MATRIXDEBUG)
+  Serial.begin(115200);
+  Serial.println();
+  Serial.write(27);                                                             // ESC command
+  Serial.print("[2J");                                                          // clear screen command 
+  Serial.write(27);                                                             // ESC command
+  Serial.print("[H");                                                           // cursor to home command  
+#endif
   pinMode(dataPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
 
@@ -70,6 +80,28 @@ uint8_t MLEDScroll::getIntensity() {
 
 void MLEDScroll::display() {
   sendDataBlock();
+#if defined (MATRIXDEBUG)
+  Serial.write(27);                                                             // ESC command
+  Serial.print("[H");                                                           // cursor to home command
+  for(uint8_t i=0;i<8;i++) {
+    for(uint8_t x=0;x<2;x++) {
+      Serial.write(27);                                                         // ESC command
+      if (x==0)
+        Serial.print("[31m");                                                   // set red color for visible leds
+      else
+        Serial.print("[37m");                                                   // set gray color for next char (not visible buffer)
+      uint8_t a = disBuffer[(8*x)+i];
+      char b[sizeof(a)*8+1] = {0};
+      for (size_t z=0;z<sizeof(a)*8;z++) {
+        b[sizeof(a)*8-1-z] = ((a>>z) & 0x1) ? '#' : ' ';
+      }
+      Serial.print(String(b));
+    }
+    Serial.println();
+  }
+  Serial.write(27);                                                             // ESC command
+  Serial.print("[39;49m");                                                      // set default colors
+#endif
 }
 
 void MLEDScroll::display(uint8_t _intens) {
