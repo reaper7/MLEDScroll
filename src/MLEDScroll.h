@@ -8,10 +8,10 @@
 #define DEFINTENSITY    1
 
 // scroll direction
-#define SCROLLLEFT      0
-#define SCROLLRIGHT     1                                                       // to right not fully working jet
-#define SCROLLDOWN      2
-#define SCROLLUP        3
+#define SCROLL_LEFT     0
+#define SCROLL_RIGHT    1                                                       // to right not fully working jet
+#define SCROLL_DOWN     2
+#define SCROLL_UP       3
 
 // scroll status
 #define SCROLL_WAITED   0
@@ -41,7 +41,7 @@ class MLEDScroll
     void clear();
     void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    uint8_t scroll(uint8_t _direction=SCROLLLEFT);
+    uint8_t scroll(uint8_t _direction=SCROLL_LEFT);
     uint8_t scroll(uint8_t _direction, uint16_t _speed);
     void message(String _msg);
     void message(String _msg, uint16_t _speed);

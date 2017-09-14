@@ -50,10 +50,10 @@ void loop() {
 
   delay(500);
 
-  letterScroll("L", SCROLLLEFT);
-  letterScroll("R", SCROLLRIGHT);
-  letterScroll("D", SCROLLDOWN);
-  letterScroll("U", SCROLLUP);
+  letterScroll("L", SCROLL_LEFT);
+  letterScroll("R", SCROLL_RIGHT);
+  letterScroll("D", SCROLL_DOWN);
+  letterScroll("U", SCROLL_UP);
 
   matrix.setIntensity(1);
   matrix.message("done... ");

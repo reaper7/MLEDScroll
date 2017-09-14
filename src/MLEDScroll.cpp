@@ -124,7 +124,7 @@ void MLEDScroll::fetchChr() {
 
 void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
   switch(_direction) {
-    case SCROLLLEFT:                                                            // from right to left
+    case SCROLL_LEFT:                                                           // from right to left
       {
         for(uint8_t i=0;i<8;i++) {
           disBuffer[i] = disBuffer[i] << 1;
@@ -135,7 +135,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
         }
       }  
       break;
-    case SCROLLRIGHT:                                                           // from left to right
+    case SCROLL_RIGHT:                                                          // from left to right
       {
         for(uint8_t i=0;i<8;i++) {
           disBuffer[i] = disBuffer[i] >> 1;
@@ -146,7 +146,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
         }
       }  
       break;
-    case SCROLLDOWN:                                                            // from top to bottom
+    case SCROLL_DOWN:                                                           // from top to bottom
       {
         char _tmp = disBuffer[15];
         for(uint8_t i=7;i>0;i--) {
@@ -157,7 +157,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
         disBuffer[8] = 0x00;
       }
       break;
-    case SCROLLUP:                                                              // from bottom to top
+    case SCROLL_UP:                                                             // from bottom to top
       memmove(disBuffer, disBuffer+1, 15);
       disBuffer[15] = 0x00;
       break;
