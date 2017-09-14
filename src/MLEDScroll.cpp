@@ -87,7 +87,7 @@ void MLEDScroll::display() {
     for(uint8_t x=0;x<2;x++) {
       Serial.write(27);                                                         // ESC command
       if (x==0)
-        Serial.print("[31m");                                                   // set red color for visible leds
+        Serial.print("[31m");                                                   // set red color for visible char (leds)
       else
         Serial.print("[37m");                                                   // set gray color for next char (not visible buffer)
       uint8_t a = disBuffer[(8*x)+i];
