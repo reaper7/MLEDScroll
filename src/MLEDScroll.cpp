@@ -131,14 +131,19 @@ void MLEDScroll::initScroll() {
 
 void MLEDScroll::fetchChr() {
   if (msgPos==msgLen) {
-    msgPos = 0;
     pauseDisplay = true;
     pauseStart = thisMs;
   }
-  memcpy_P(disBuffer+8, matrix_fonts+(charMsg[msgPos++]*8), 8);
+  memcpy_P(disBuffer+8, matrix_fonts+(charMsg[msgPos]*8), 8);
+  msgPos++;
 }
 
 void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
+  if (!firstChrSet) {
+    fetchChr();
+    firstChrSet = true;
+  } 
+
   switch(_direction) {
     case SCROLL_LEFT:                                                           // from right to left
       {
@@ -203,11 +208,7 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
         _scrollStatus = SCROLL_PAUSED;      
       }
     } else {
-      if (!firstChrSet) {
-        fetchChr();
-        firstChrSet = true;
-      } 
-      moveScrollBuffer(_direction);
+      moveScrollBuffer(currDir);
       display();
       _scrollStatus = SCROLL_MOVED;
     }  
@@ -220,6 +221,7 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
     Serial.printf("\033[%d;%dH%d", 12, 14, _scrollStatus);
   Serial.printf("\033[%d;%dH%d", 15, 14, currDir);
 #endif
+  yield();
   return _scrollStatus;
 }
 
