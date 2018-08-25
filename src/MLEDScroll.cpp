@@ -117,13 +117,13 @@ void MLEDScroll::dot(uint8_t _x, uint8_t _y, bool _draw, bool _updCurrRow) {
   }
 }
 
-void MLEDScroll::hline(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
+void MLEDScroll::hLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
     for( uint8_t i = 0; i < _l; i++){
         dot(_x+i, _y, _draw);
     }
 }
 
-void MLEDScroll::vline(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
+void MLEDScroll::vLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
     for( uint8_t i = 0; i < _l; i++){
         dot(_x, _y+i, _draw);
     }

@@ -42,8 +42,8 @@ class MLEDScroll
     void display(uint8_t _intens);
     void clear();
     void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
-    void hline(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw=true);
-    void vline(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw=true);
+    void hLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw=true);
+    void vLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw=true);
     void rect(uint8_t _x, uint8_t _y, uint8_t _l, uint8_t _h, bool _draw=true);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t scroll(uint8_t _direction=SCROLL_LEFT);
