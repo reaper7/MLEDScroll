@@ -130,10 +130,10 @@ void MLEDScroll::vLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
 }
 
 void MLEDScroll::rect(uint8_t _x, uint8_t _y, uint8_t _l, uint8_t _h, bool _draw) {
-    hline(_x, _y, _l, _draw);
-    hline(_x, _y+_h, _l, _draw);
-    vline(_x, _y, _h, _draw);
-    vline(_x+_l, _y, _h, _draw);
+    hLine(_x, _y, _l, _draw);
+    hLine(_x, _y+_h, _l, _draw);
+    vLine(_x, _y, _h, _draw);
+    vLine(_x+_l, _y, _h, _draw);
 }
 
 void MLEDScroll::initScroll() {
