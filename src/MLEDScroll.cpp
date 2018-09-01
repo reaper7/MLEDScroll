@@ -113,8 +113,27 @@ void MLEDScroll::dot(uint8_t _x, uint8_t _y, bool _draw, bool _updCurrRow) {
     if (flip)
       sendData(_y, disBuffer[_y]);
     else
-      sendData(7-_y, swap(disBuffer[_y]));   
+      sendData(7-_y, swap(disBuffer[_y]));
   }
+}
+
+void MLEDScroll::hLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
+    for( uint8_t i = 0; i < _l; i++){
+        dot(_x+i, _y, _draw);
+    }
+}
+
+void MLEDScroll::vLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw) {
+    for( uint8_t i = 0; i < _l; i++){
+        dot(_x, _y+i, _draw);
+    }
+}
+
+void MLEDScroll::rect(uint8_t _x, uint8_t _y, uint8_t _l, uint8_t _h, bool _draw) {
+    hLine(_x, _y, _l, _draw);
+    hLine(_x, _y+_h, _l, _draw);
+    vLine(_x, _y, _h, _draw);
+    vLine(_x+_l, _y, _h, _draw);
 }
 
 void MLEDScroll::initScroll() {
@@ -142,7 +161,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
   if (!firstChrSet) {
     fetchChr();
     firstChrSet = true;
-  } 
+  }
 
   switch(_direction) {
     case SCROLL_LEFT:                                                           // from right to left
@@ -154,7 +173,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
           }
           disBuffer[i+8] = disBuffer[i+8] << 1;
         }
-      }  
+      }
       break;
     case SCROLL_RIGHT:                                                          // from left to right
       {
@@ -165,7 +184,7 @@ void MLEDScroll::moveScrollBuffer(uint8_t _direction) {
           }
           disBuffer[i+8] = disBuffer[i+8] >> 1;
         }
-      }  
+      }
       break;
     case SCROLL_DOWN:                                                           // from top to bottom
       {
@@ -205,13 +224,13 @@ uint8_t MLEDScroll::scroll(uint8_t _direction) {
         initScroll();
         _scrollStatus = SCROLL_ENDED;
       } else {
-        _scrollStatus = SCROLL_PAUSED;      
+        _scrollStatus = SCROLL_PAUSED;
       }
     } else {
       moveScrollBuffer(currDir);
       display();
       _scrollStatus = SCROLL_MOVED;
-    }  
+    }
   } else {
     _scrollStatus = SCROLL_WAITED;
   }
@@ -272,7 +291,7 @@ void MLEDScroll::character(String _character) {
 
 void MLEDScroll::icon(uint8_t _icon) {
   if (_icon>=ICONMAX)
-    _icon = 0; 
+    _icon = 0;
   memcpy_P(disBuffer, matrix_fonts+((ICONPOSSTART + _icon)*8), 8);
   memset(charMsg, 0, sizeof(charMsg));
   msgLen = 1;
@@ -293,11 +312,11 @@ void MLEDScroll::sendEnd() {
   digitalWrite(clockPin, HIGH);
   delayMicroseconds(DEFPINDELAY);
   digitalWrite(dataPin, HIGH);
-  delayMicroseconds(DEFPINDELAY); 
+  delayMicroseconds(DEFPINDELAY);
 }
 
 void MLEDScroll::send(uint8_t _data) {
-  for(uint8_t i=0;i<8;i++) { 
+  for(uint8_t i=0;i<8;i++) {
     digitalWrite(dataPin, !!(_data & (1<<i)));
     delayMicroseconds(DEFPINDELAY);
     digitalWrite(clockPin, HIGH);

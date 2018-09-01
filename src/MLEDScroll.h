@@ -42,6 +42,9 @@ class MLEDScroll
     void display(uint8_t _intens);
     void clear();
     void dot(uint8_t _x, uint8_t _y, bool _draw=true, bool _updCurrRow=false);
+    void hLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw=true);
+    void vLine(uint8_t _x, uint8_t _y, uint8_t _l, bool _draw=true);
+    void rect(uint8_t _x, uint8_t _y, uint8_t _l, uint8_t _h, bool _draw=true);
     char disBuffer[16]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t scroll(uint8_t _direction=SCROLL_LEFT);
     uint8_t scroll(uint8_t _direction, uint16_t _speed);
@@ -55,7 +58,7 @@ class MLEDScroll
     void setIntensity(uint8_t _intens);
     uint8_t getIntensity();
     uint16_t scrollSpeed;                                                       // scroll speed in ms (lower = faster):
-    unsigned long msgPauseTime;                                                 // pause after message in ms (0 = no pause): 
+    unsigned long msgPauseTime;                                                 // pause after message in ms (0 = no pause):
     bool flip;
 
   private:
@@ -63,7 +66,7 @@ class MLEDScroll
     void sendEnd();
     void send(uint8_t _data);
     void sendCommand(uint8_t _cmd);
-    void sendData(uint8_t _address, uint8_t _data);                             // send 1 data byte at fixed address 
+    void sendData(uint8_t _address, uint8_t _data);                             // send 1 data byte at fixed address
     void sendDataBlock();                                                       // send 8 data bytes at once with autoincrement (much faster)
     uint8_t dataPin;
     uint8_t clockPin;
