@@ -4,7 +4,7 @@
 
 #define MAXTEXTLEN        254
 #define ICONPOSSTART      256
-#define ICONMAX           4
+#define ICONMAX           5
 #define DEFPINDELAY       1
 
 #define DISP_CTRL_CMD     0x80
