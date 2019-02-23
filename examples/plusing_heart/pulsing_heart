@@ -2,7 +2,6 @@
 
 MLEDScroll matrix;
 
-
 void heartpulse(uint8_t _icon) {
   matrix.setIntensity(0);
   matrix.icon(_icon);
